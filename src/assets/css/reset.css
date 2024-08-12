@@ -1,0 +1,116 @@
+.tac {
+  text-align: center;
+}
+
+.tar {
+  text-align: right;
+}
+
+.fz20 {
+  font-size: 20px;
+}
+
+.fz28 {
+  font-size: 28px;
+}
+
+.fz26 {
+  font-size: 26px;
+}
+
+.fz24 {
+  font-size: 24px !important;
+}
+
+.ml10 {
+  margin-left: 10px;
+}
+
+.ml20 {
+  margin-left: 20px;
+}
+
+.ml30 {
+  margin-left: 30px;
+}
+
+.mt20 {
+  margin-top: 20px;
+}
+
+/* .homePage .container .titleChunk .overallChunk #wen .actionBtn .selectUl li#feng .el-select--default .el-tooltip__trigger {
+  height: 68px !important;
+}
+:v-deep .el-select__wrapper {
+  height: 68px !important;
+} */
+
+.custom-el-select__wrapper {
+  width: 234px;
+  height: 68px;
+  text-align: center !important;
+  font-size: 24px;
+  border-radius: 6px !important;
+
+  .el-select__wrapper {
+    width: 234px;
+    height: 68px;
+    background-color: #ebe9e9;
+    font-size: 24px;
+    border-radius: 6px;
+  }
+  .el-icon {
+    font-size: 30px; /* 你想要的图标大小 */
+  }
+} 
+
+@media screen and (max-width: 829px) {
+
+  .el-select__wrapper {
+    text-align: center !important;
+    width: 6.24rem;
+    height: 1.814rem !important;
+    min-height: 0 !important;
+    background-color: #c4c4c4;
+    font-size: 0.64rem !important;
+    border-radius: 8px;
+  }
+
+  #jjjj {
+    width: 6.24rem;
+    height: 1.814rem;
+    /* background-color: #c4c4c4; */
+    font-size: .64rem;
+    border: none;
+    border-radius: 6px;
+    background-color: rgba(196, 196, 196, 1);
+  }
+}
+
+@media screen and (min-width: 830px) {
+  .el-rate {
+    --el-rate-icon-size: 32px;
+  }
+  .oy-el-rate {
+    --el-rate-icon-size: 24px;
+  }
+
+
+  #jjjj {
+    width: 234px;
+    height: 68px;
+    background-color: #c4c4c4;
+    font-size: 24px;
+    border: none;
+    border-radius: 6px;
+  }
+
+  #wwww {
+    width: 234px;
+    height: 68px;
+    background-color: #c4c4c4;
+    font-size: 24px;
+    border-radius: 6px;
+
+  }
+}
