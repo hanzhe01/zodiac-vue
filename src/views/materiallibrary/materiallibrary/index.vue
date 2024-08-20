@@ -199,7 +199,7 @@
             <el-input v-model="form.luckyItems" placeholder="请输入幸运物品" />
           </el-form-item>
           <el-form-item label="购买链接" prop="purchaseLink">
-            <el-input v-if="showInput === 0" v-model="form.purchaseLink" placeholder="请输入购买链接" />
+            <el-input v-model="form.purchaseLink" placeholder="请输入购买链接" />
           </el-form-item>
           <el-row :gutter="20" class="row-bg">
             <el-col :span="6">
@@ -625,13 +625,13 @@ function reset() {
     luckyTime: null,
     luckyItems: null,
     purchaseLink: null,
-    firstTitleName: null,
+    firstTitleName: "LOVE HOROSCOPE",
     firstTitleContent: null,
     firstTitleStar: null,
-    secondTitleName: null,
+    secondTitleName: "WORK HOROSCOPE",
     secondTitleContent: null,
     secondTitleStar: null,
-    thirdTitleName: null,
+    thirdTitleName: "HEALTH HOROSCOPE",
     thirdTitleContent: null,
     thirdTitleStar: null,
     isWeekFortune: null,

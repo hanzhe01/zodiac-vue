@@ -1,6 +1,9 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item label="UUID:" prop="petId">
+        <el-input v-model="queryParams.petId" placeholder="白名单编号" clearable @clear="getList"/>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -33,6 +36,7 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="序号" align="center" prop="id" />
       <el-table-column label="设备白名单ID" align="center" prop="petId" />
+      <el-table-column label="网址+UUID" align="center" prop="urlUuid" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
@@ -43,14 +47,17 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize"
-      @pagination="getList" />
+    <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize" @pagination="getList" />
 
     <!-- 添加或修改白名单对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="petRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="设备id" prop="petId">
-          <el-input v-model="form.petId" placeholder="请输入设备id" />
+        <el-form-item label="设备UUID" prop="petId">
+          <el-input v-model="form.petId" placeholder="请输入设备UUID" />
+        </el-form-item>
+        <el-form-item label="设备网址+UUID" prop="urlUuid">
+          <el-input v-model="form.urlUuid" placeholder="请输入设备网址+UUID" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -62,34 +69,26 @@
     </el-dialog>
     <!-- 用户导入对话框 -->
     <el-dialog :title="upload.title" v-model="upload.open" width="400px" append-to-body>
-         <el-upload
-            ref="uploadRef"
-            :limit="1"
-            accept=".xlsx, .xls"
-            :headers="upload.headers"
-            :action="upload.url + '?updateSupport=' + upload.updateSupport"
-            :disabled="upload.isUploading"
-            :on-progress="handleFileUploadProgress"
-            :on-success="handleFileSuccess"
-            :auto-upload="false"
-            drag
-         >
-            <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-            <template #tip>
-               <div class="el-upload__tip text-center">
-                  <span>仅允许导入xls、xlsx格式文件。</span>
-                  <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;" @click="importTemplate">下载模板</el-link>
-               </div>
-            </template>
-         </el-upload>
-         <template #footer>
-            <div class="dialog-footer">
-               <el-button type="primary" @click="submitFileForm">确 定</el-button>
-               <el-button @click="upload.open = false">取 消</el-button>
-            </div>
-         </template>
-      </el-dialog>
+      <el-upload ref="uploadRef" :limit="1" accept=".xlsx, .xls" :headers="upload.headers"
+        :action="upload.url + '?updateSupport=' + upload.updateSupport" :disabled="upload.isUploading"
+        :on-progress="handleFileUploadProgress" :on-success="handleFileSuccess" :auto-upload="false" drag>
+        <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <template #tip>
+          <div class="el-upload__tip text-center">
+            <span>仅允许导入xls、xlsx格式文件。</span>
+            <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;"
+              @click="importTemplate">下载模板</el-link>
+          </div>
+        </template>
+      </el-upload>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="submitFileForm">确 定</el-button>
+          <el-button @click="upload.open = false">取 消</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -113,6 +112,7 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
+    petId: null
   },
   rules: {
   }
@@ -237,7 +237,7 @@ const upload = reactive({
 
 /** 导入按钮操作 */
 function handleImport() {
-  upload.title = "用户导入";
+  upload.title = "设备白名单导入";
   upload.open = true;
 };
 /** 下载模板操作 */
