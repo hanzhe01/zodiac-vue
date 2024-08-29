@@ -57,6 +57,12 @@ export const constantRoutes = [
     component: () => import('@/views/error/401'),
     hidden: true
   },
+  //预览路由
+  {
+    path: '/constellationview',
+    component: () => import('@/views/constellationview/index'),
+    hidden: true
+  },
   {
     path: '',
     component: Layout,

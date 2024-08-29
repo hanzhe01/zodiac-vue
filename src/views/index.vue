@@ -42,7 +42,7 @@
       <el-table-column label="生日" align="center" prop="birthday" />
       <el-table-column label="更新日期" align="center" prop="updateTime" width="180">
         <template #default="scope">
-          <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
+          <span>{{ scope.row.updateTime }}</span>
         </template>
       </el-table-column>
       <el-table-column label="网址" align="left" prop="webUrl">
@@ -58,7 +58,7 @@
             v-hasPermi="['materiallibrary:materiallibrary:edit']">编辑内容</el-button>
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
             v-hasPermi="['constellation:constellation:edit']">修改</el-button>
-          <el-button link type="primary" icon="View" @click="showView(scope.row)"
+          <el-button link type="primary" icon="View" @click="openPreview(scope.row.meterialLibraryId, scope.row.id)"
             v-hasPermi="['constellation:constellation:showView']">预览</el-button>
         </template>
       </el-table-column>
@@ -83,7 +83,7 @@
           <el-input v-model="form.birthday" placeholder="请输入生日" />
         </el-form-item>
         <el-form-item label="更新日期" prop="updataDate">
-          <el-date-picker clearable v-model="form.updateTime" type="date" value-format="YYYY-MM-DD"
+          <el-date-picker clearable v-model="form.updateTime" type="date" value-format="YYYY-MM-DD HH:mm:ss"
             placeholder="请选择更新日期">
           </el-date-picker>
         </el-form-item>
@@ -177,7 +177,7 @@
           <el-input v-model="materialForm.luckyItems" placeholder="请输入幸运物品" />
         </el-form-item>
         <el-form-item label="购买链接" prop="purchaseLink">
-          
+
           <el-input v-model="materialForm.purchaseLink" placeholder="请输入购买链接" />
         </el-form-item>
         <el-row :gutter="20" class="row-bg">
@@ -227,180 +227,11 @@
         </div>
       </template>
     </el-dialog>
-    <el-dialog v-model="dialogVisible" title="预览" width="80%">
-      <div class="homePage">
-        <div class="container">
-          <div class="wheelChunk"></div>
-          <div class="titleChunk">
-            <p class="tac title">{{ state.detailsObj.constellationName }}</p>
-            <p class="tar readMore">Read More</p>
-            <div class="imgBox">
-              <img :src="currentImage" alt="" />
-            </div>
-            <p class="tac dater">
-              <span class="full_span">{{ state.fullMonth }}</span>
-              <span class="full_span">,</span>
-              <span class="full_span">{{ state.fullYear }}</span>
-            </p>
-
-            <div class="mt20 overallChunk">
-              <div class="tac item_cel">
-                <span class="title">Overall Horoscope</span>
-              </div>
-              <div class="tac item_cel">
-                <span style="text-align:left">
-                  <el-rate v-model="state.detailsObj.horoscopeFortuneStar" allow-half disabled />
-                </span>
-              </div>
-              <div class="item_cel">
-                <div class="content">
-                  {{ state.detailsObj.horoscopeFortune }}
-                </div>
-              </div>
-              <div class="tac item_cel">
-                <span class="title">Zodiac Compatibility</span>
-              </div>
-              <div class="mt20 item_cel" id="wen">
-                <div class="actionBtn">
-                  <ul class="selectUl">
-                    <li>
-                      <el-button id="jjjj" style="">{{
-                        state.detailsObj.constellationName
-                      }}</el-button>
-                    </li>
-                    <li class="mathch_li">Mathch</li>
-                    <li id="feng" style="font-size: 24px">
-                      <el-select id="wwww" v-model="state.selectVal" placeholder="Select" size="default"
-                        suffix-icon="CaretBottom" class="custom-el-select__wrapper" @change="onExamNameChange">
-                        <el-option v-for="item in state.dropdownArr" :key="item.id" :label="item.name"
-                          :value="item.id" />
-                      </el-select>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div class="item_cel">
-                <div class="match">
-                  <span class="name">Mathc:</span>
-                  <span class="">
-                    <el-rate v-model="state.detailsObj.starLevel" allow-half disabled />
-                  </span>
-                </div>
-                <div class="advice">
-                  <span class="name">Advice:</span>
-                  <span class="static">
-                    {{ state.detailsObj.suggestion }}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-
-            <div class="mt20 statisticChunk">
-              <div class="item">
-                <div class="i_content">
-                  <p class="text_12 p_12">
-                    <span class="round" :style="`background-color: ${state.detailsObj.luckyColor}`"></span>
-                    <span class="ml20 s_cor">{{
-                      state.detailsObj.luckyColor
-                    }}</span>
-                  </p>
-                  <div class="tac tag_2 flex-col">
-                    <span class="text_13">Lucky Color</span>
-                  </div>
-                </div>
-              </div>
-              <div class="item">
-                <div class="i_content">
-                  <p class="tac text_12 p_13">
-                    {{ state.detailsObj.luckyNumbers }}
-                  </p>
-                  <div class="tac tag_2 flex-col">
-                    <span class="text_13">Lucky Numbers</span>
-                  </div>
-                </div>
-              </div>
-              <div class="item">
-                <div class="i_content">
-                  <p class="text_12 p_13">{{ state.detailsObj.luckyTime }}</p>
-                  <div class="tac tag_2 flex-col">
-                    <span class="text_13">Lucky Time</span>
-                  </div>
-                </div>
-              </div>
-              <div class="item">
-                <div class="i_content" style="padding-top: 10px;">
-                  <p class="tac text_12 p_14">
-
-                    <span class="fz26 s_1">{{ state.detailsObj.luckyItems }}</span>
-                    <span class="fz26 s_1">
-                      <a style="color: #1192ff" :href="state.detailsObj.purchaseLink"  v-if="state.detailsObj.purchaseLink !== ''" target="_blank">Purchase link</a>
-                    </span>
-                  <div class="tac tag_2 flex-col" style="margin-top: 13px;">
-                    <span class="text_13">Lucky Item</span>
-                  </div>
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="listChunk">
-              <div class="branner">
-                <div class="imgBox">
-                  <img src="../assets/img/allotype.png" alt="" />
-                </div>
-              </div>
-              <div class="contentRow">
-                <div class="item">
-                  <div class="score">
-                    <div class="sco_title">
-                      <span class="name">{{
-                        state.detailsObj.firstTitleName
-                      }}</span>
-                    </div>
-                    <div class="ml30 s_rate">
-                      <el-rate v-model="state.detailsObj.firstTitleStar" allow-half disabled />
-                    </div>
-                  </div>
-                  <div class="i_content">
-                    {{ state.detailsObj.firstTitleContent }}
-                  </div>
-                </div>
-                <div class="item">
-                  <div class="score">
-                    <div class="sco_title">
-                      <span class="name">{{
-                        state.detailsObj.secondTitleName
-                      }}</span>
-                    </div>
-                    <div class="ml30 s_rate">
-                      <el-rate v-model="state.detailsObj.secondTitleStar" allow-half disabled />
-                    </div>
-                  </div>
-                  <div class="i_content">
-                    {{ state.detailsObj.secondTitleContent }}
-                  </div>
-                </div>
-                <div class="item">
-                  <div class="score">
-                    <div class="sco_title">
-                      <span class="name">{{
-                        state.detailsObj.thirdTitleName
-                      }}</span>
-                    </div>
-                    <div class="ml30 s_rate">
-                      <el-rate v-model="state.detailsObj.thirdTitleStar" allow-half disabled />
-                    </div>
-                  </div>
-                  <div class="i_content">
-                    {{ state.detailsObj.thirdTitleContent }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </el-dialog>
+    <!-- 预览的 iframe 弹窗 -->
+    <div v-if="isPreviewOpen" class="iframe-popup">
+      <el-button @click="closePreview">关闭预览页面</el-button>
+      <iframe :src="iframeSrc" frameborder="1" name="预览" title="预览" width="600px" </iframe>
+    </div>
   </div>
 </template>
 
@@ -434,7 +265,7 @@ const endTime = ref("")
 /**
  * 拼接开始时间和结束时间
  */
- const updateLuckyTime = () => {
+const updateLuckyTime = () => {
   materialForm.value.luckyTime = `${startTime.value}-${endTime.value}`
   console.log(materialForm.value.luckyTime)
 }
@@ -692,144 +523,40 @@ getList();
  * 预览组件控制
  * 
  */
-import moment from "moment";
-const dialogVisible = ref(false)
-const state = reactive({
-  fullMonth: "",
-  fullDay: "",
-  fullYear: "",
-  selectVal: 1,    // 默认选中第一个选项的id
-  dropdownArr: [
-    {
-      name: "Aries",
-      id: 1,
-    },
-    {
-      name: "Taurus",
-      id: 2,
-    },
-    {
-      name: "Gemini",
-      id: 3,
-    },
-    {
-      name: "Cancer",
-      id: 4,
-    },
-    {
-      name: "Leo",
-      id: 5,
-    },
-    {
-      name: "Virgo",
-      id: 6,
-    },
-    {
-      name: "Libra",
-      id: 7,
-    },
-    {
-      name: "Scorpio",
-      id: 8,
-    },
-    {
-      name: "Sagittarius",
-      id: 9,
-    },
-    {
-      name: "Capricorn",
-      id: 10,
-    },
-    {
-      name: "Aquarius",
-      id: 11,
-    },
-    {
-      name: "Pisces",
-      id: 12,
-    },
-  ],
-  detailsObj: {},
-});
-const materiallId = ref(null)
-const onExamNameChange = () => {
-  const params = {
-    materiallLibraryId: materiallId.value,
-    pairingId: state.selectVal
-  }
-  getDetails(params)
+const isPreviewOpen = ref(false);
+// iframe 的 URL
+const iframeSrc = ref('');
+// 打开预览功能
+const openPreview = (meterialLibraryId, constellationId) => {
+  // 构造带参数的 iframe URL
+  iframeSrc.value = `/constellationview?id=${meterialLibraryId}&constellationId=${constellationId}`;
+  isPreviewOpen.value = true; // 显示弹窗
+};
+// 关闭预览功能
+const closePreview = () => {
+  isPreviewOpen.value = false; // 关闭弹窗
+  iframeSrc.value = ''; // 清空 iframe URL
 };
 
-function showView(row) {
-  const now = moment();
-  state.fullMonth = now.format("MMMM DD");
-  state.fullYear = now.format("YYYY");
-  const _id = row.meterialLibraryId
-  //根据获取的星座编号，变化图片
-  currentIndex.value = row.id
-  console.log(currentIndex)
-  materiallId.value = _id;
-  const params = {
-    materiallLibraryId: _id,
-    pairingId: state.selectVal
-  }
-  getDetails(params)
-  dialogVisible.value = true;
-}
-function getDetails(params) {
-  getPreviewDetails(params).then(response => {
-    if (response.code === 200) {
-      state.detailsObj = response.data;
-    } else {
-      ElMessage({
-        message: response.msg,
-        type: "error",
-      });
-    }
-  });
-}
-
-// 按顺序定义图片路径数组
-const imageUrls = [
-  new URL('@/assets/img/by.png', import.meta.url).href,
-  new URL('@/assets/img/jn.png', import.meta.url).href,
-  new URL('@/assets/img/szz.png', import.meta.url).href,
-  new URL('@/assets/img/jx.png', import.meta.url).href,
-  new URL('@/assets/img/sz.png', import.meta.url).href,
-  new URL('@/assets/img/cn.png', import.meta.url).href,
-  new URL('@/assets/img/tp.png', import.meta.url).href,
-  new URL('@/assets/img/tx.png', import.meta.url).href,
-  new URL('@/assets/img/ss.png', import.meta.url).href,
-  new URL('@/assets/img/mj.png', import.meta.url).href,
-  new URL('@/assets/img/sp.png', import.meta.url).href,
-  new URL('@/assets/img/sy.png', import.meta.url).href,
-];
-
-// 定义一个用于存储当前图片编号的变量
-const currentIndex = ref(0);
-
-// 动态获取当前图片路径的计算属性
-const currentImage = computed(() => {
-  return imageUrls[currentIndex.value-1];
-});
 </script>
-
-<style>
-@import "../assets/css/reset.css";
-</style>
 <style scoped>
-@import "../assets/css/web.scss";
-@import "../assets/css/mobile.scss";
+.iframe-popup {
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 80%;
+  background-color: rgb(184, 184, 184);
+  border: 1px solid #ff0000;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
 
-/** max-width 小于或等于 */
-/** min-width 大于或等于 */
-/* 设置 suffix-icon 图标的大小 */
-#app {
+.iframe-popup iframe {
+  flex-grow: 1;
   width: 100%;
   height: 100%;
-}
-
-.tac {
-  text-align: center;
 }
 </style>

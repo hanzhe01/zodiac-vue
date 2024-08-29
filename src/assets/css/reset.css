@@ -38,6 +38,10 @@
   margin-top: 20px;
 }
 
+.f800{
+  font-weight: 800;
+}
+
 /* .homePage .container .titleChunk .overallChunk #wen .actionBtn .selectUl li#feng .el-select--default .el-tooltip__trigger {
   height: 68px !important;
 }
@@ -45,33 +49,27 @@
   height: 68px !important;
 } */
 
-.custom-el-select__wrapper {
-  width: 234px;
-  height: 68px;
+.el-select__wrapper {
+  height: 68px !important;
   text-align: center !important;
-  font-size: 24px;
+  font-size: 24px !important;
   border-radius: 6px !important;
-
-  .el-select__wrapper {
-    width: 234px;
-    height: 68px;
-    background-color: #ebe9e9;
-    font-size: 24px;
-    border-radius: 6px;
-  }
-  .el-icon {
-    font-size: 30px; /* 你想要的图标大小 */
-  }
-} 
+}
 
 @media screen and (max-width: 829px) {
+  .el-rate {
+    --el-rate-icon-size: 32px;
+  }
+  .oy-el-rate {
+    --el-rate-icon-size: 24px;
+  }
 
   .el-select__wrapper {
     text-align: center !important;
     width: 6.24rem;
     height: 1.814rem !important;
     min-height: 0 !important;
-    background-color: #c4c4c4;
+    background-color: #ffffff !important;
     font-size: 0.64rem !important;
     border-radius: 8px;
   }
@@ -111,6 +109,13 @@
     background-color: #c4c4c4;
     font-size: 24px;
     border-radius: 6px;
+  }
 
+  .el-select__wrapper {
+    width: 234px;
+    height: 68px;
+    /* background-color: #c4c4c4; */
+    font-size: 24px;
+    border-radius: 6px;
   }
 }

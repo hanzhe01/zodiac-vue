@@ -101,7 +101,7 @@
 
             <el-table-column label="创建时间" align="center" prop="generationDate" width="180">
               <template #default="scope">
-                <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
+                <span>{{ scope.row.createTime }}</span>
               </template>
             </el-table-column>
             <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -110,7 +110,7 @@
                   v-hasPermi="['materiallibrary:materiallibrary:edit']">修改</el-button>
                 <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
                   v-hasPermi="['materiallibrary:materiallibrary:remove']">删除</el-button>
-                <el-button link type="primary" icon="View" @click="showView(scope.row)"
+                <el-button link type="primary" icon="View" @click="openPreview(scope.row.id, scope.row.constellationId)"
                   v-hasPermi="['constellation:constellation:showView']">预览</el-button>
                 <el-tooltip class="box-item" effect="light" content="复制ID" placement="top">
                   <el-button link icon="CopyDocument" size="small" type="primary" circle
@@ -277,7 +277,7 @@
         </template>
       </el-dialog>
     </el-row>
-    <el-dialog v-model="dialogVisible" title="预览" width="80%">
+    <!-- <el-dialog v-model="dialogVisible" title="预览" width="80%">
       <div class="homePage">
         <div class="container">
           <div class="wheelChunk"></div>
@@ -344,7 +344,6 @@
                 </div>
               </div>
             </div>
-
 
             <div class="mt20 statisticChunk">
               <div class="item">
@@ -450,7 +449,7 @@
           </div>
         </div>
       </div>
-    </el-dialog>
+    </el-dialog> -->
     <!-- 自动生成对话框 -->
     <el-dialog v-model="dialogAutoFormVisible" title="自动生成(一条生成时间约为30秒)" width="500">
       <el-form :model="autoForm">
@@ -488,13 +487,16 @@
         </div>
       </template>
     </el-dialog>
+    <!-- 预览的 iframe 弹窗 -->
+    <div v-if="isPreviewOpen" class="iframe-popup">
+      <el-button @click="closePreview">关闭预览页面</el-button>
+      <iframe :src="iframeSrc" frameborder="1" name="预览" title="预览" width="600px"</iframe>
+    </div>
   </div>
 </template>
 
 <script setup name="Materiallibrary">
-import { getPreviewDetails } from "@/api/constellation/constellation";
 import { listMateriallibrary, getMateriallibrary, delMateriallibrary, addMateriallibrary, updateMateriallibrary } from "@/api/materialLibrary/materialLibrary";
-
 const { proxy } = getCurrentInstance();
 //消息弹出框
 import { ElMessage } from 'element-plus'
@@ -631,7 +633,7 @@ function reset() {
     secondTitleName: "WORK HOROSCOPE",
     secondTitleContent: null,
     secondTitleStar: null,
-    thirdTitleName: "HEALTH HOROSCOPE",
+    thirdTitleName: "BONUS HOROSCOPE",
     thirdTitleContent: null,
     thirdTitleStar: null,
     isWeekFortune: null,
@@ -772,131 +774,24 @@ function submitFileForm() {
 };
 
 getList();
-
+//预览页面iframe
 /**
- * 预览组件控制
- * 
+ * 控制弹窗的显示状态
  */
-import moment from "moment";
-const dialogVisible = ref(false)
-const state = reactive({
-  fullMonth: "",
-  fullDay: "",
-  fullYear: "",
-  selectVal: 1,    // 默认选中第一个选项的id
-  dropdownArr: [
-    {
-      name: "Aries",
-      id: 1,
-    },
-    {
-      name: "Taurus",
-      id: 2,
-    },
-    {
-      name: "Gemini",
-      id: 3,
-    },
-    {
-      name: "Cancer",
-      id: 4,
-    },
-    {
-      name: "Leo",
-      id: 5,
-    },
-    {
-      name: "Virgo",
-      id: 6,
-    },
-    {
-      name: "Libra",
-      id: 7,
-    },
-    {
-      name: "Scorpio",
-      id: 8,
-    },
-    {
-      name: "Sagittarius",
-      id: 9,
-    },
-    {
-      name: "Capricorn",
-      id: 10,
-    },
-    {
-      name: "Aquarius",
-      id: 11,
-    },
-    {
-      name: "Pisces",
-      id: 12,
-    },
-  ],
-  detailsObj: {},
-});
-const materiallId = ref(null)
-const onExamNameChange = () => {
-  const params = {
-    materiallLibraryId: materiallId.value,
-    pairingId: state.selectVal
-  }
-  getDetails(params)
+const isPreviewOpen = ref(false); 
+// iframe 的 URL
+const iframeSrc = ref(''); 
+// 打开预览功能
+const openPreview = (id, constellationId) => {
+  // 构造带参数的 iframe URL
+  iframeSrc.value = `/constellationview?id=${id}&constellationId=${constellationId}`;
+  isPreviewOpen.value = true; // 显示弹窗
 };
-
-function showView(row) {
-  const now = moment();
-  state.fullMonth = now.format("MMMM DD");
-  state.fullYear = now.format("YYYY");
-  const _id = row.id
-  materiallId.value = _id;
-  currentIndex.value = row.constellationId
-  const params = {
-    materiallLibraryId: _id,
-    pairingId: state.selectVal
-  }
-  getDetails(params)
-  dialogVisible.value = true;
-}
-function getDetails(params) {
-  getPreviewDetails(params).then(response => {
-    if (response.code === 200) {
-      state.detailsObj = response.data;
-    } else {
-      ElMessage({
-        message: response.msg,
-        type: "error",
-      });
-    }
-  });
-}
-
-// 按顺序定义图片路径数组
-const imageUrls = [
-  new URL('@/assets/img/by.png', import.meta.url).href,
-  new URL('@/assets/img/jn.png', import.meta.url).href,
-  new URL('@/assets/img/szz.png', import.meta.url).href,
-  new URL('@/assets/img/jx.png', import.meta.url).href,
-  new URL('@/assets/img/sz.png', import.meta.url).href,
-  new URL('@/assets/img/cn.png', import.meta.url).href,
-  new URL('@/assets/img/tp.png', import.meta.url).href,
-  new URL('@/assets/img/tx.png', import.meta.url).href,
-  new URL('@/assets/img/ss.png', import.meta.url).href,
-  new URL('@/assets/img/mj.png', import.meta.url).href,
-  new URL('@/assets/img/sp.png', import.meta.url).href,
-  new URL('@/assets/img/sy.png', import.meta.url).href,
-];
-
-// 定义一个用于存储当前图片编号的变量
-const currentIndex = ref(0);
-
-// 动态获取当前图片路径的计算属性
-const currentImage = computed(() => {
-  return imageUrls[currentIndex.value-1];
-});
-
-
+// 关闭预览功能
+const closePreview = () => {
+  isPreviewOpen.value = false; // 关闭弹窗
+  iframeSrc.value = ''; // 清空 iframe URL
+};
 
 /**
  * 自动生成
@@ -971,39 +866,24 @@ function downAutoData() {
 
 
 </script>
-<style>
-@import "../../../assets/css/reset.css";
-</style>
 <style scoped>
-@import "../../../assets/css/web.scss";
-@import "../../../assets/css/mobile.scss";
-
-/** max-width 小于或等于 */
-/** min-width 大于或等于 */
-/* 设置 suffix-icon 图标的大小 */
-
-.tac {
-  text-align: center;
+.iframe-popup {
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 80%;
+  background-color: rgb(184, 184, 184);
+  border: 1px solid #ff0000;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
 }
 
-/* 自定义 CSS 类 */
-.active-menu-item {
-  position: relative;
-}
-
-.active-menu-item::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 50%;
-  background-color: #409EFF;
-}
-
-.el-menu-vertical-demo .el-menu-item {
-  padding-right: 30px;
-  /* 为右侧留出空间 */
+.iframe-popup iframe {
+  flex-grow: 1;
+  width: 100%;
+  height: 100%;
 }
 </style>
